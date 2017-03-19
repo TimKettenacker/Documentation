@@ -1,0 +1,1147 @@
+---
+title: "Statistical Learning"
+author: "Tim Kettenacker"
+date: "25 Juni 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+Machine Learning is based on statistical techniques and means the science of getting computers to learn without being explicitly programmed. Machine Learning algorithms are already present in daily life in various forms, e.g. google page rank, spam filter and automated tagging. 
+
+<br>
+
+### Methodology
+
+<br>
+
+#####Unsupervised Learning
+
+- given is an unstructured, unlabelled dataset -> needs clustering and categorization!
+- fields of application: social network analysis, market segmentation, ... (where you don't know exactly who belongs to which group)
+
+
+#####Supervised Learning
+
+- supervised learning means that you give the algorithm a dataset which already contains the "right answers", i.e. housing price prediction; for every example in a housing dataset the right price for a house is already given 
+- one field of application is regression: predict continuous valued output (in this example, the price) based on the size of a house
+- another field of application is classification: discrete valued output (0 or 1); sometimes there are two or more possible values for the output
+
+
+    The objective to achieve on basis of the training dataset:
+
+- accurately predict unseen data
+- understand which input predicts the outcome, and how
+- assess the quality of our predictions and inferences
+
+<br>
+
+####Methods
+
+Depending on whether our ultimate goal is prediction, inference or a combination of the two, different methods for estimating a function that represents the connection between input and output may be appropriate. For example, linear models allow for relatively simple and interpretable inference, but may not yield as accurate predictions as some other approaches. In contrast, some of the highly non-linear approaches can potentially provide quite accurate predictions, but this comes at the expense of a less interpretable model for which inference is more challenging.
+
+<br>
+
+#####Parametric methods
+
+The parametric model-based approach reduces the problem of estimating f down to estimating a set of parameters.
+
+1.) First, we make an assumption about the functional form, or shape of f
+$f(X) = ß0 + ß1X1$ 
+
+2.) After a model has been selected, we need a procedure that uses the training data to fit the model.
+
+
+However in general, fitting a more flexible model requires estimating a greater number of parameters. These more complex models can lead to a phenomenon called overfitting the data, which essentially means they follow the errors, or noise, too closely.
+
+<br>
+
+#####Non-parametric methods
+
+Non-parametric models do not make explicit assumptions about the functional form of f.       Instead they seek an estimate of f that gets as close to the data points as possible. But they suffer from a major disadvantage: since they do not reduce the problem of estimating f to a small number of parameters, a very large number of observations is required in order to obtain an accurate estimate for f.
+
+<br>
+
+Why would we ever choose to use a more restrictive method instead of a very flexible approach? There are several reasons that we might prefer a more restrictive model. If we are mainly interested in inference, then restrictive models are much more interpretable. It will be quite easy to understand the relationship between Y and X1, X2 and so on. In contrast, very flexible approaches can lead to such complicated estimates of f that it is difficult to understand how any individual predictor is associated with the response.
+
+<br>
+
+####Assessing Model Fit
+
+In order to evaluate the performance of a statistical learning method on  a given data set, we need some way to measure how well its predictions actually match the observed data (without overfitting it).
+
+- fit a model to a training set
+- compute the average squared prediction error over the training set and new test data MSE = $\frac{1}{2}(Yi - \hat{f}(Xi))^{2}$
+- the mean squared error will be small if the predicted responses are very close to the true responses
+- in order to assess the fitting of the model, we need to assess the accuracy of the predictions that we obtain when we apply our method to previously unseen test data
+- when a given method yields a small training MSE but a large MSE in test data, we are said to be overfitting the data. This occurs because our statistical learning procedure is working too hard to find patterns in the training data.
+- good test set performance of a statistical learning method requires low variance as well as low squared bias
+- for a classification setting, the most common approach for quantifying the accuracy of our estimate is simply the training error rate $\frac{1}{n}\sum{(yi \neq \hat{yi})}$
+- conditional probability: some information is already given: P(A|B) = P(A)P(B)/P(B) = P(A)
+- Bayes'Theorem is useful for diagnostic tests
+- in theory, we would always like to predict qualitative responses using the Bayes classifier. But for real data, we do not know the conditional distribution of Y given X, and then classify a given observation to the class with highest estimated probability. One such method is the K-nearest neighbors (KNN) classifier
+
+<br>
+
+###Linear Regression
+####Procedure
+
+Linear regression is a useful tool for predicting a quantitative response when there is a linearity in the relationship between explanatory and response variable. As an approach to supervised learning, a dataset is at hand for training the algorithm.
+
+Training set notation:
+- n = number of training examples
+- x = input variable(s) / features - it assumes that the dependence of Y on X1, X2, X3 etc is linear
+- y = output variable / target variable
+
+The basic process underlying supervised training prediction methods resembles:
+Training Set -> Learning Algorithm -> hypothesis (function) h maps from x's to y's, i.e. Size of house -> h -> estimated price
+
+The model thus predicts a quantitative response Y on the basis of predictor variables. It assumes an approximate linearty between Y and X and can therefore be written as $Y = \hat{ß0} + \hat{ß1}X1 + \lambda$, with $\lambda$ capturing measurement errors and other discrepancies. 
+
+* thus, a fitting model can make predictions of Y at new points X
+* however, in practice the true function and its coefficients ß0 and ß1 are not known, so we need to use the available data samples to estimate the coefficients
+* Is there an ideal f(X)? Imagine we want too explain children's heights based on parent's heights. For a selected value X1 = 68, there can be many Y values (especially if you look at the distribution of values in a plot, see example below), but a function can only take one value for Y at X 
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=6}
+require(UsingR)
+require(ggplot2)
+data(galton)
+ggplot(galton, aes(x = parent, y = child)) + geom_jitter(colour="darkslateblue")
+```
+
+* one can draw many lines through the graph to describe a relationship between children's heights and parent's heights, but we want to find an intercept $\hat{ß0}$ and a slope $\hat{ß1}$ such that the resulting line is as close as possible to the data points
+* the regression line is the line through the data which has the minimum (least) squared "error", the vertical distance between the data points (children's heights) and the line
+* the measure of this closeness would be the least squares (the MSE measures the average of the squares of the errors or deviations, that is, the difference between the estimator and what is estimated): $\sum{(Yi - (ß0 + ß1Xi))}^{2}$ Squaring the distances ensures that data points above and below the line are treated the same
+
+
+<div style="width:300px; height=300px">
+![](C:\Users\admkett\Documents\Captures\Capture.png)
+</div>
+
+* R comes with a command that automatically fits the model. lm() is R's function to fit linear models. The function lm (linear model) needs a "formula" and dataset. You need to specify the dependent variable (i.e. children's heights) ~ the independent variable (parents' heights).
+```{r, eval=FALSE}
+lm(child ~ parent, galton)
+
+```
+* and it's very straightforward to plot the regression line to a ggplot
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=6}
+require(UsingR)
+require(ggplot2)
+data("galton")
+ggplot(galton, aes(x = parent, y = child)) + geom_jitter(colour="darkslateblue") + geom_abline(lwd=1.5, colour="gold1")
+```
+
+* The model fit contains the slope and intercept. The slope of the line is the estimate of the coefficient, in this case 0.64629
+```{r, message=FALSE, warning=FALSE}
+lm(child ~ parent, galton)
+```
+
+* mathematically, the same solution can be determined for $\hat{ß1}$ by taking $Cor(Y,X) (Sd(Y)/Sd(X))$ with the estimated intercept $\hat{ß0} = \bar{Y} - \hat{ß1}\bar{X}$
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=6}
+require(UsingR)
+data(galton)
+y <- galton$child
+x <- galton$parent
+slope <- cor(y,x) * sd(y)/sd(x)
+intercept <- mean(y) - slope * mean(x)
+rbind(c(slope, intercept), coef(lm(y ~ x)))
+```
+
+* this yields the same results for slope and intercept 
+* fitting the regression line is "merely" a mathematical operation, but how do we do statistical inference?
+
+<br>
+
+####Interpretation
+
+For the interpretation of the statistics we consider a data set on diamond rings containing price in Singapore dollars and size of diamond in carats.
+
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=6}
+require(UsingR)
+require(ggplot2)
+data(diamond)
+g = ggplot(diamond, aes(x = carat, y = price))
+g <- g + xlab("Mass in carats") + ylab("Price in SIN-$")
+g <- g + geom_point(size=6, colour = "black", alpha = 0.2)
+g <- g + geom_point(size=5, colour = "blue", alpha = 0.2)
+g <- g+ geom_smooth(method="lm", colour = "black")
+g
+```
+
+* again, we display the slope and intercept by typing the model fit
+```{r, message=FALSE, warning=FALSE} 
+fit <- lm(price ~ carat, diamond)
+coef(fit)
+```
+- How to interpret the **slope**?
+-> We estimate an *expected 3721.02 SIN-$ increase in price for every carat increase in mass of diamond*
+- How to interpret the **intercept**?
+-> The intercept -259.63 is *the expected price of a 0 carat diamond*
+- that interpretation for the intercept is not really helpful, it would be of more benefit to have an interpretation of the average sized diamond in our dataset
+- thus, the model needs to be fit to mean center the predictor X (carat)
+
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=6} 
+require(UsingR)
+data(diamond)
+fit2 <- lm(price ~ I(carat - mean(carat)), data = diamond)
+coef(fit2) 
+```
+- the slope remains the same, but the interpretation has changed for the intercept: 500 SIN$ is the expected price for the average sized diamond of the data
+
+<br>
+
+####Prediction
+
+One use of the least squares line is that it allows us to evaluate the relationship between the two numerical variables. Another important use is prediction. It's as simple as plugging in the value of the x in the linear model and looking to see what the resulting y, the response variable, is. This process is called extrapolation, and it might be a dangerous thing to do, as you never really now how the least square line is shaped outside of the realm of the observed data. This might result in an unreliable estimate. 
+
+To stay with the example from above, what can we do if new data becomes available and we want to predict, i.e. prices for the new diamonds?
+
+R works wih the predict function that maps new datasets to existing models
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+require(UsingR)
+data(diamond)
+fit <- lm(price ~ carat, diamond)
+newx <- c(0.16, 0.27, 0.34)
+predict(fit, newdata = data.frame(carat = newx))
+```
+- these are the new prices for the carat of 3 new diamonds based on a model
+
+<div style="width:300px; height=300px">
+![](C:\Users\admkett\Documents\Captures\Capture2.png)
+</div>
+- it fits these new data points on the regression line, which means you can basically read their prices from a graph
+- in a more generalized conclusion, one can interpret the intercept as the value of Y when X = 0 and the slope as the average increase in Y associated with a one-unit increase in X
+- linear regression comes with an inference components since we can also derive the uncertainty of predictions (by confidence intervals)
+
+
+<br>
+ 
+####Assessing the accuracy of the model
+
+There are several statistics to assess a poor model fit; residuals are helpful for investigating poor model fit if test data is available  and rather small. Residuals are basically leftovers from the model fit. The residual is defined as the difference between the observed and the predicted Y. They are displayed as red lines in the picture of our example.
+
+```{r, message=FALSE, warning=FALSE, fig.height=4, fig.width=6}
+require(UsingR)
+data(diamond)
+fit <- lm(diamond$price ~ diamond$carat, diamond)
+yhat <- predict(fit) ##the predicted price
+plot(diamond$carat, diamond$price,
+  xlab = "Mass (carats)", ylab = "Price (SIN-$)",
+  bg = "lightblue", col = "black")
+abline(fit, lwd = 2)
+for(i in 1 : length(diamond$price)){
+  lines(c(diamond$carat[i], diamond$carat[i]), c(diamond$price[i], yhat[i]), col = "red", lwd=2)
+}
+```
+
+Hence, residual variation is the variation around the regression line and is calculated with formula RSE = $\frac{1}{n-2}\sqrt{\sum{(y - \hat{y})}^{2}}$ (sometimes also displayed as  $\sigma^{2}$). We can't simply add up all of the residuals because some of them are going to be negative and some of them are going to be positive, depending on whether the model is over or underestimating certain data points. This is why they are squared.
+Any kind of discernable pattern hints at a mismatch between residuals and model. Check using scatterplots or residual plots (you would want the residuals to be randomly scattered around the regression line)), residuals should be nearly normally distributed centered at 0. In R, the residuals are accessable by summary(lm(y ~ x)); all residuals sum up to zero (or a value close to zero, like in this example)
+
+
+```{r, message=FALSE, warning=FALSE, collapse=TRUE}
+require(UsingR)
+data(diamond)
+fit <- lm(diamond$price ~ diamond$carat, diamond)
+## get all residuals
+resid(fit)
+## sum of all residuals
+sum(resid(fit))
+## RSE 
+summary(fit)$sigma
+## and what the command is doing
+sqrt(sum(resid(fit)^2) / (length(diamond$price)-2))
+```
+
+Correlation describes the strength of the linear association between two variables. The value of the correlation coefficient $R$ measures the strength of the linear association between two numerical variables (the higher the value, the stronger the association). A few properties:
+* the correlation coefficient is unitless
+* the correlation of X with Y is the same as of Y with X  
+* the correlation coefficient is sensitive to outliers
+
+The strength of the fit of a linar  model is most commonly evaluated using $R^{2}$. This is calculated as simply the square of the correlation coefficient. $R^{2}$ tells us what percent of variability in the response variable is explained by the model. The remainder of the variability is explained by variables not included in the model. In our example, it is the percentage of the variation in diamond pricing that is explained by the regressional relationship with mass. $R^{2}$ can be misleading; it can be distorted when you delete data points or add terms to a regression model.
+
+<br>
+
+####Inference
+
+Inference is the process of drawing conclusions about a population using a sample. In statistical inference, we must account for the uncertainty in our estimates. Hypothesis tests and confidence intervals are among the most common forms of statistical inference.
+
+The two flavors of inference. The first is frequency, which uses "long run proportion of times an event occurs in independent, identically distributed repetitions." The second is Bayesian in which the probability estimate for a hypothesis is updated as additional evidence is acquired. Both flavors require an understanding of probability.
+
+
+
+#####Probability
+
+Given a random experiment (say rolling a die) a probability measure is a population quantity that summarizes the randomness. Probability is therefor about quantifying the likelihood of particular events occurring. 
+
+If you're doing an experiment with n possible outcomes, say e1, e2, ..., en, then the sum of the probabilities of all the outcomes is 1. If all the outcomes are equally likely, as in the case of a fair die, then the probability of each is 1/n.
+
+The probability that something occurs is 1 minus the probability that the opposite occurs. 
+If A and B are two independent events then the probability of them both occurring is the
+product of the probabilities. P(A&B) = P(A) * P(B)
+
+The probability of at least one of two things that can not simultaneously occur is the sum of their respective probabilities. 
+
+<div style="width:300px; height=300px">
+![](C:\Users\admkett\Documents\Captures\Capture3.png)
+</div>
+
+If an event A implies the occurrence of event B, then the probability of A occurring is less than the probability that B occurs.
+
+For any two events the probability that at least one occurs is the sum of their probabilities minus their intersection.
+
+<div style="width:300px; height=300px">
+![](C:\Users\admkett\Documents\Captures\Capture4.png)
+</div>
+
+Example; Two dices are rolled. Which expression represents the probability of rolling an even number or a number greater than 8? 
+
+* 1: (18+10-4)/36
+* 2: (18+4-2)/36
+* 3: (18+10-2)/36
+* 4: (18+10)/36
+
+The probability of rolling an even number is 1/2 or 18/36. There are 10 ways of rolling a
+number greater than '8' - 4 ways for rolling '9', 3 for '10', 2 for '11' and 1 for '12'. The intersection between rolling an even number and those greater than '8' is (18+10-4)/36.
+
+It follows that if A and B are disjoint or mutually exclusive, i.e. only one of them can occur, then P(A U B) = P(A)+P(B). Which of the following expressions represents the probability of rolling a number greater than 10?
+
+* 1: (3+1-1)/36
+* 2: (1+1)/36
+* 3: (3+1)/36
+* 4: (2+1)/36
+
+Since there are two ways for getting 11 and 1 for 12, the probability is 3/36.
+
+
+The conditional probability of an event A, given that an event B occurred is the probability of the intersection of A and B divided by the probability of B.
+$P(A|B) = P(A ∩ B)/P(B)$, and if A and B are statistically unrelated, the formula is $P(A|B) = P(A)P(B)/P(B) = P(A)$. 
+
+Example: If you were given a fair die and asked what the probability of rolling a 3 is, but another person rolled it behind your back and tells you it is an odd number, what is your answer?
+
+* 1: 1/2
+* 2: 1/6
+* 3: 1/3
+
+Given that there are 3 odd numbers on the die your possibilities have been reduced to 3 and you want to know the probability of 1 of them, the answer is 1/3.
+
+The Bayes' rule states that we can calculate the probability of P(B|A) given the probability of P(A|B) with P(B|A) = P(B&A)/P(A) = P(A|B) * P(B)/P(A).
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture24.png)
+</div>
+
+<br>
+
+Another question to this dataset: What percent of Americans who live below the poverty line also speak a language other than English at home?
+
+According to Bayes rule, it is 0.042/0.0146 = 0.29.
+
+Probability trees can be used to solve problems with conditional probabilities, highlighting that they're especially useful when the probability we're asked for is the reverse of what we're given, so they implicitly make use of Bayes' Theorem.
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture25.png)
+</div>
+
+<br>
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture26.png)
+</div>
+
+<br>
+
+##### Distributions
+
+A histogram provides a view of the data density, higher bars represent where data are relatively more common. Histograms are also very useful for identifying shapes of distributions.  Distributions are set to be skewed to the left side of the long tail. In a left skewed distribution, the longer tail is on the left on the negative end. The distribution of income on the other hand is right skewed. Incomes can't be negative so we have a natural boundary at zero, but there is no real upper limit to how high incomes can go. If no skewness is apparent, then the distribution is said to be symmetric.
+
+Another important aspect of shape is modality. A distribution might be unimodal with one prominent peak, bimodal with two prominent peaks, or uniform with no prominent peaks. With more than two prominent peaks a distribution is usually said to be multimodal. 
+
+Another key characteristic that is of interest is the center of the distribution, commonly used measures of center are the mean, which is simply the arithmetic average. The median, which is the mid point of the distribution or in other words the 50th percentile and the mode which is the most frequent observation. If these measurements are calculated from a sample, they're called sample statistics. Sample statistics are point estimates for the unknown population parameters. 
+
+The normal distribution is unimodal and symmetric. the key fact of the density formula is that when plotted, it forms a bell shaped curve, symmetric about its mean mu. The normal distribution has two parameters, mean, that we usually denote as mu. And the standard deviation that we usually denote is sigma. The variance $\sigma^{2}$ corresponds to the width of the bell, the higher the variance, the fatter the bell. For nearly normally distributed data 68% falls within one standard deviation of the mean. 95% falls within two standard deviations of the mean, and 99.7% falls within three standard deviations of the mean. We can also use the 68 to 95, 99.7% rule to estimate the standard deviation of a normal model given just a few parameters about the distribution of the data. So, One can think of the units of a standard normal distribution as standard deviation units, e.g. two standard deviation units in both directions from the mean, about 95% of the density lie within them (this is frequently used in terms of confidence intervals)
+
+<div style="width:300px; height=300px">
+![](C:\Users\admkett\Documents\Captures\Capture5.png)
+</div>
+
+We define a standardized or Z-score as the number of standard deviations and observations fall below or above the mean. We calculate the Z-score of an observation as that observation minus the mean divided by the standard deviation $z = (observation - mean)/sd$. When the distribution is normal, Z scores can also be used to calculate percentiles (If a distribution is not normal but follows a different shape, we have to use calculus). 
+
+A percentile is the percentage of observations that fall below a given data point. In R, the function P norm gives the percentile of an observation, given the mean and the standard deviation of the distribution. 
+
+An example: SAT scores are distributed normally with mean 1500 and sd 300. Pam earned an 1800 on her SAT. What is her percentile score? 
+
+pnorm(q = 1800, mean = 1500, sd = 300) = 0.84; this means she scored better than 84% of the SAT takers. 
+
+You can also reverse that: a friend of yours tells you that she scored in the top 10% on the SAT, what is the lowest possible score she could have gotten? 
+
+In order to figure out what the 90th percentile of a standard normal distribution is, R comes with the inbuilt function qnorm. Qnorm is used for quantiles or cutoff values, which takes the percentile as the first input, the mean and the standard deviation as the second and the third: qnorm(0.9, mean = 1500, sd = 300) = 1884. 1884 is the cutoff value for the top 90% and the lowest point one needs to score to still be in the top.
+
+Another example: Assume that the number of daily clicks on a website is normally distributed with a mean of 1020 and a standard deviation of 50. What is the probability of getting more than 1160 clicks a day?
+
+One thought: you have to add the value of the standard deviation almost 3 times to the value of the mean to obtain the number 1160 = 1020 + 2.8 * 50. 3 times is pretty far from the mean!
+In R: pnorm(1160, mean = 1020, sd = 50, lower.tail = FALSE)
+
+<br>
+
+##### Variance
+
+While the mean characterizes the center of a distribution, the variance and its square root, the standard deviation, characterize the distribution's spread around the mean. As the sample mean estimates the population mean, so the sample variance estimates the population variance.  The variance of a random variable, as a measure of spread or dispersion, is, like a mean, defined as an expected value. It is the expected squared distance of the variable from its mean. Squaring the distance makes it positive so values less than and greater than the mean are treated the same. Higher variance implies more spread around a mean than lower variance.
+
+- The variance of a random variable is a measure of spread around the mean
+- The square root of the variance is called standard deviation
+- the sample variance $S^{2}$ estimates the population variance $\sigma^{2}$
+- so the standard deviation S really talks about how variable the population is
+- With increasing variance, distributions spread out
+- With increasing sample draws, the variance of sample mean $Var(\bar{X}) = \sigma^{2}/n$ decreases
+
+Just as we distinguished between a population mean and a sample mean we have to distinguish between a population variance $\sigma^{2}$ and a sample variance $s^{2}$. They are defined similarly but with a slight difference. The sample variance is defined as the sum of n squared distances from the sample mean divided by (n-1), where n is the number of samples or observations. We divide by n-1 because this is the number of degrees of freedom in the system. As with the sample mean, the sample variance is also a random variable with an associated population distribution. Its expected value or mean is the population variance and its distribution gets more concentrated around the population variance with more data. The sample standard deviation is the square root of the sample variance.
+
+
+$\sigma^{2}\hat{ß1} = \sigma^{2}/ \sum{(X-\bar{X})^{2}}$ is the formula of the variance of the slope, it tells us how variable the points are around the true regression line and how variable my x's are.
+
+<br>
+
+
+##### Sampling variability & CLT
+
+Say we have a population of interest and we take a random sample from it, and based on that sample, we calculate a sample statistic. For example, the mean of that sample. Then suppose we take another random sample and also calculate and record its mean. Then we do this again and again, many more times. Each one of the samples will have their own distribution, which we call sample distributions. The distribution of the sample statistics is called the sampling distribution. 
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture6.png)
+</div>
+
+<br>
+
+E.g. if we want to know the average height of all women in the US, we might take a sample of 1000 women per state. The mean of the sample means will probably be around the true population. The standard deviation of this sample means will probably be much lower than the population standard deviation since we would expect the average height for each state to be pretty close to one another.For example, we wouldn't expect to find a state where the average height of a random sample of thousand women is as low as 4 feet or as high as 7 feet. We call the standard deviation of the sample means the standard error. As the sample size increases, the standard error will decrease. 
+
+The central limit theorem establishes that, for the most commonly studied scenarios, when independent random variables are drawn, the distribution of sample means from many samples tends toward a normal distribution (commonly known as a bell curve) even if the original variables themselves are not normally distributed. Hence it implies that probabilistic and statistical methods that work for normal distributions can be applicable to many problems involving other types of distributions.
+
+Following task b) includes calculating with the CLT:
+
+a)
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture7.png)
+</div>
+
+This is the same thing as saying among all the population of songs on this iPod, what percentage of them last more than five minutes. We can actually use the histogram and the heights of the bars to estimate what percentage of songs fall between. In here, you cannot use Z-scores because it only works if the distribution is nearly normal. But this one is right-skewed, as you can imagine, it's going to be fewer and fewer songs as the number of minutes increases. 
+
+b)
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture8.png)
+</div>
+
+We want the average length to be greater than 3.6 minutes. Now that we have introduced the $\bar{x}$, the sample mean, that should remind us that the central limit theorem might be helpful. Because using the central limit theorem, we can find the distribution of the sample mean pretty easily. The central limit theorem says that $\bar{x}$ will be distributed nearly normally, with mean equal to the population mean, which is 3.45 minutes. The Z-score is equal to 3.6, the observation, minus 3.45, the mean, divided by 0.163, the standard error.
+
+This also holds true for categorial variables (so-called proportions):
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture12.png)
+</div>
+
+<br>
+
+##### Confidence Intervals
+
+A plausible range of values for the population parameter is called a confidence interval. Any interval we construct to guess the population mean should be constructed around $\bar{x}$ that we know to be our best guess. From the central limit theorem, we know that $\bar{x}$ are distributed nearly normally, and the center of that distribution is at the unknown population mean. One more piece of item that we want to think about is the 68, 95, 99.7% rule. Which tells us that, roughly 95% of random samples will have sample means that are within two standard errors of the population mean. Clearly then, for 95% of random samples, the unknown true population mean is going to be within two standard errors of that sample's mean. So the 95% confidence interval can be constructed approximately as our sample mean, plus or minus two standard errors. In this formula, what comes after the plus or minus, the two standard errors, is actually called the margin of error. So usually we construct a confidence interval as a point estimate +- margin of error = $\bar{x} +- z* SE$. 
+In this case we are dealing with mean so our point estimate is the sample mean, plus or minus some margin of error. The margin of error for a 95% confidence interval is roughly two times the standard error.
+
+The confidence interval for a population mean is computed as the sample mean plus/minus a margin of error (critical value corresponding to the midle XX% of the normal distribution times the standard error of the sampling distribution):
+$\bar{x}+-z*(s/sqrt{n})$
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture8.png)
+</div>
+z can also be calculated in r as qnorm(0.025)
+
+If you want to be very certain to capture the true population parameter, you need to widen the interval. However, the precision decreases. Therefore, it is always good to increase the sample size (in turn, the standard error and margin of error are shrinking). The sample size for a certain margin of error can even be calculated by $ME=z*(s/sqrt{n}) => n = (z*s/ME)^{2}$. The methodology can also be applied to categorical variables with $\hat{p}+-z*SE$. To calculate the standard error for the sample proportion, the formula is adapted to $ME = sqrt{(\hat{p}*(1 - \hat{p})/n)}$. If there isn't a previous study that we can rely on for the value of p-hat in this formula, we would instead simply use 0.5 for our p-hat because if you don't know any better and this is a categorical variable with two outcomes, a success and a failure, 50-50 is a pretty good guess.   
+
+<br>
+
+##### Hypothesis Testing & p-values
+
+- hypothesis testing is concerned with making decisions using data
+- We start with a null hypothesis (H0) that represents the status quo 
+- we also have an alternative hypothesis (H1) that represents our research question
+- we conduct a hypothesis test under the assumption that H0 is true
+- If the test results suggest that the data do not provide convincing evidence for the alternative hypothesis, we stick with the null hypothesis. If they do, then we reject the null hypothesis in favor of the alternative. 
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture10.png)
+</div>
+
+<br>
+
+An example: We calculated a 95% confidence interval for the average number of exclusive relationships college students have been in to be 2.7 to 3.7. Based on this confidence interval, do these data support the hypothesis that college students on average have been in more than three exclusive relationships? 
+
+H0: mu = 3 College students have been in 3 exclusive relationships, on average.
+H1: mu > 3 College students have been in more than 3 exclusive relationships, on average.
+
+The p value is s the probability of observed or more extreme outcome, given that the null hypothesis is true. Since we are assuming null hypothesis to be true, we can use that to construct the sampling distribution based on the central limit theorem. We have x bar that's nearly normally distributed with mean 3 and standard error 0.246. We calculated the standard error before as well, and the 3 simply comes from the null hypothesis, since we're assuming that it is true. 
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture11.png)
+</div>
+
+Here the p-value, as an extreme value, is the shaded area in the curve, which can be calculated using z scores. If the p-value is lower than the significance level alpha, which is usually set at 0.05, we say that it would be very unlikely to observe the data if the null hypothesis were true, and therefore we reject the null hypothesis.
+Our p-value is 0.209, and since it's higher than 5%, we do not reject the null hypothesis. These data do not provide convincing evidence that college students have been in more than three relationships on average.
+
+Often, we might be interested in a divergence from the null hypothesis in any direction. We call such hypothesis tests two-sided. 
+
+If we actually wanted to do a two-sided hypothesis test with the existing data that we had, we would set our p-value now to be $\bar{x}$ greater than 3.2, or we want to consider the other direction as well, $\bar{x}$ less than 2.8, given that the null hypothesis says that the true population mean is 3. So we can draw our curve and shade both tails. How did we come up with 2.8? That's the same distance between 3 and 3.2, we just subtracted 0.2 from 3 and arrived at 2.8. To find this probability, we had already seen that the upper tail was 0.209. Since this is a symmetric distribution, the lower tail will also be 0.209. And therefore our p-value is simply going to be the probability on the upper tail plus the probability on the lower tail, which comes out to be just twice what we have in one tail, roughly 41.8%. 
+
+During hypothesis testing, you can make two types of errors: 
+Type I error is rejecting H0 when you shouldn't have, and the probability of doing so is significance level alpha. Type II error is not rejecting H0 when you should.
+
+Type I error rate: We reject H0 when the p-value is less than alpha = 0.05. This means that for those cases where H0 is actually true, we do not want to incorrectly reject it more than 5% of those times. So when using a 5% significance level there is about 5% chance of making a Type I error if the null hypothesis is true. If type I error is dangerous or costly, a small significance level should be chosen. If instead the ype II error is more dangerous or costly, the significance level should be increased. 
+
+For categorial values: When do we use p, and when do we use $\hat{p}$? Simply said, we use the sample proportion when there's nothing else known. And we use the population proportion, or at least the null hypothesized value of the population proportion, when we're doing a hypothesis test, which dictates that we must assume that the null hypothesis is true. So, if we want to check the success-failure condition for our confidence interval, we would use the observed proportions, the observed sample proportions. If, on the other hand, we are checking the success-failure condition for a hypothesis test, we use the expected counts and plug in the p that comes from the null hypothesis. 
+
+<br>
+
+
+##### t-distribution
+
+- use the t distribution for inference on a single sample mean or for comparing two means when the population standard deviations are unknown (which is almost always)
+- to recap: a large sample size is useful as the sampling distribution of the mean is nearly normal and the estimte of the standard error becomes more reliable $s/sqrt{n}$
+- The uncertainty of the standard error estimate is addressed by using the t-distribution. This distribution also has a bell shape, but its tails are thicker
+- confidence intervals constructed using the t distribution will be wider, as observations are more likely to fall two standard deviations away from the mean
+- the t-distribution is always centered at 0 and has one parameter - the degrees of freedom - which determines the thickness of tails (in contrast, the normal distribution has two parameters, mean and standard deviation)
+- as the degrees of freedom increases, the shape of the t-distribution approaches the normal distribution
+- the t-statistic is calculated just like you a Z statistic as the sample mean minus the null value divided by the standard error of the sample mean
+
+Example for comparing two paired means (so they are dependent): 200 observations were randomly sampled from a High School survey. The same students took a reading and a writing test. At a first glance, how are the two distributions of reading and writing scores similar, or how are they different?
+
+A student's reading score is likely not independent of their own writing score. If they're generally a high achieving student, they're likely to score highly on both tests. When two sets of observations have this special correspondence, or in other words they are not independent, they are said to be paired. To analyze paired data, it is often useful to look at the difference in outcomes of each pair of observations. So here, for example, for each student, we subtract their writing score from their reading score, and create a new variable called the difference between the two scores. And calculate this difference for each student in our data set. 
+
+We're going to estimate this unknown population mean with our sample statistic, which is the average difference between the reading and writing scores of these sampled 200 high school students.
+
+The hypotheses for paired means results in H0: There is no difference between average reading and writing scores and H1, there is a difference respectively. Afterwards, calculate the T statistic.
+
+<br>
+
+
+##### Anova
+
+We know that we can compare means of two groups using T statistics and comparing a groups of three or more is going to require a new test called analysis of variance and a new statistic, the F statistic. The null hypothesis in ANOVA, just like any other null hypothesis says the mean outcome is the same across all categories. We can denote this as mu one one equals mu two equals mu three all the way to mu k. H1 says that at least one pair of means are different from each other.
+
+In a t-test, we compare means from two groups to see whether they're so far apart that the observed difference cannot reasonably be attributed to sampling variability. In ANOVA we compare many means, from more than two groups to see whether they're so far apart that they observed differences cannot all reasonably be attributed to sampling variability. 
+
+The anova test statistic, called f statistic, is calculated as the ratio of the variability between groups, over the variability within groups. This adheres to variability partitioning which means considering different factors that contribute to variability in our response variable. E.g. the scoring in an exam has different factors, like preparatio beforehand, learning outcome etc.
+
+The anova output will contain a between group variability and an within group variability. Sum of squares total (SST) measures the total variability in the response variable $SST = sum{(y - \bar{y})}^2$. Sum of squares groups (SSG) measures the variability between groups and can be thought of as the variability in the response variable explained by explanatory variable in the analysis.
+
+Finding a statistically significant result at the end of an ANOVA, however, only tells us that at least one pair of means are different, but not which pair of means are different. 
+
+<br>
+
+
+##### Estimating the difference between two proportions (categorical variables)
+
+Evaluating the relationship between two categorical variables is often an important task. In this case, we're going to label one of our categorical variables the explanatory variable and the other one the response variable. When categorial variables have only two levels, the procedure is to calculate proportion of successes in the two groups based on the sample, and compare the outcome to each other. In fact, it is going to be a calculation of a confidence interval for the difference between the two population proportions.
+
+In early October 2013, a Gallup poll asked, "Do you think there should or should not be a law that would ban the possession of handguns, except by the police and other authorized persons?" The possible responses on the survey were no, there should not be such a law, yes, there should be such a law, or no opinion. The two samples come from the US and Coursera respondents.
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture13.png)
+</div>
+
+<br>
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture14.png)
+</div>
+
+To estimate differences between proportions we use a confidence interval, which is always of the form point estimate +- margin of error. The point estimate is the difference between the two sample proportions and the margin of error can be calculated using the z score (based on the central limit theorem, we can deduct that the distribution of those are going to be nearly normal): $(\hat{p1} - \hat{p2}) +- z*SE(\hat{p1} - \hat{p2}$.  
+
+Standard error for difference between two proportions, for calculating a confidence interval $SE = sqrt{(\hat{p1}(1-\hat{p1})/n1) + (\hat{p2}(1-\hat{p2})/n2)}$.
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture15.png)
+</div>
+
+We are 95% confident that the proportion of Coursera students, who believe there should be a ban on handguns is, 36% higher to 56% higher than the proportion of Americans who do.
+
+<br>
+
+##### Hypothesis test for comparing two proportions
+
+<div style="width:300px; height=300px">
+![](C:\Users\admkett\Documents\Captures\Capture16.png)
+</div>
+
+If we want to compare these two proportions, our null hypothesis should be that the proportion of males and proportion of females whose children have ever been the victim of bullying should be equal to each other or in other words the difference between the two population proportions should be 0. 
+
+Recap: In terms of the standard error, once again, we use p hat in calculation of the standard error for confidence intervals. Versus we use p, the null value of the population proportion, for the hypothesis test. However, if working with two proportions, other rules apply:
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture17.png)
+</div>
+
+<br>
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture18.png)
+</div>
+
+<br>
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture19.png)
+</div>
+
+<br>
+
+
+##### chi-square goodness of fit and independence tests
+
+The chi-square goodness of fit test is made to evaluate the distribution of one categorical variable that has more than two levels.
+
+An example: In a county where jury selection is supposed to be random, a civil rights group sues the county, claiming racial disparities in jury selection. Distribution of ethnicities of people in the county who are eligible for jury duty based on census results are given: in this population we have 80.29% whites 12.06% blacks, 0.79% Native Americans, 2.92% Asians and Pacific islanders, and 3.94% other ethnicities. We are also given the distribution of 2500 people who were selected for jury duty in the previous year. Of these 2,500 people, 1,920 were white, 347 were black, 19 were native America, 18 were Asian and Pacific Islander, and 130 were categorized as other race or ethnicity.
+
+Hypotheses: H0: People selected for jury duty are a simple random sample from the population of potential jurors. The observed counts of jurors from various race ethnicities follow the same ethnicity distribution in the population.
+H1: people selected for jury duty are not a simple random sample from the population of potential jurors. The observed counts of jurors from various ethnicities, do not follow the same race ethnicity distribution in the population.
+
+The hypotheses can be evaluated in the sense as we want to quantify how different the observed counts are from the expected counts. And if the observed counts are very different from the expected counts, in other words the deviations are large from what would be expected based on sampling variation or simply chance alone, it would provide strong evidence for the alternative hypothesis. This is called a goodness of fit test since we're evaluating how well the observed data fit the expected distribution.
+
+If the jury selection is random, then we would expect the observed count to follow the percentage distribution in the population. If the jury selection is random, we would of course expect some sampling variation or chance around this. But what we're going to be evaluating at the end of the day is, are the observed counts so different from the expected counts that we might suspect something is going on here.
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture20.png)
+</div>
+
+When dealing with counts and investigating how far the observed counts are from the expected counts, we use the chi-square-statistic $x^2 = sum{((O-E)^2)/E}$.
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture21.png)
+</div>
+
+The p-value for a chi-square test is defined as the tail area above the calculated test statistic. In R pchisq(22.63, 4, lower.tail = FALSE).
+
+With such a small p-value of 0.0002, we would reject the null hypothesis, which in this context means that the data provide convincing evidence that the observed distribution of the counts of race ethnicities of jurors does not follow the distribution in the population. 
+
+In case of the chi-square independence test we're dealing with two categorical variables where at least one has more than two levels.
+
+Example: Is there are relationsheip between weight and relationship status?
+
+H0: Weight and relationship status are independent. Obesity rates do not vary by relationship status.
+H1: weight and relationship status are dependent. Obesity rates do vary by relationship status.
+
+To evaluate these hypotheses just like with the chi square test of goodness of fit, we quantify how different the observed counts are from the expected counts. And we want to keep in mind that large deviations from what would be expected based on sampling variation or chance alone provide strong evidence for the alternative hypothesis. This is called an independence test since we're evaluating the relationship between two categorical variables. 
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture22.png)
+</div>
+
+With this small p value, we reject the null hypothesis in favor of the alternative. Which means that these data provide convincing evidence that relationship status and obesity are associated.
+
+<br>
+
+
+### Machine Learning
+
+- The field of machine learning focuses on the study and construction of computer systems that can learn from data without being explicitly programmed
+- Machine learning algorithms and techniques are used to build models, to discover hidden patterns and trends in the data allowing for data-driven decisions to be made
+- That is the system's often called models can learn to perform a specific task by analyzing lots of examples for a particular problem.
+- In applying machine learning to a problem, domain knowledge is essential to the success of end results
+
+<br>
+
+#### Categories of Machine Learning Techniques
+
+- classification: the goal is to predict the category of the input data
+- regression: When your model has to predict a numeric value instead of a category, then the task becomes a regression problem
+- cluster analysis: the goal is to organize similar items into groups
+- association analysis: the goal is to come up with a set of rules to capture associations between items
+- supervised (what the model is predicting is provided) vs unsupervised ('unlabeled' data, target is unknown or unavailable) approaches
+- classification & regression are in general supervised, while cluster analysis & association analysis are in general unsupervised
+
+<br>
+
+#### CRISP-DM
+
+- CRISP-DM (CRoss Industry Standard Process for Data Mining) is a process model that describes the steps in a data mining process
+- much like the data science process, its phases consist of business understanding, data understanding, data preparation, modeling, evaluation and deployment
+
+<br>
+
+#### In-sample and out-of-sample errors
+
+In-sample errors are the errors you get on the same data you used to train your predictor. 
+
+Out-of-sample-erros are the errors you get if you apply a new dataset to your prediction algorithm. The reason is overfitting: This happens when the algorithm starts to tune itself to the noise that you collected in a particular data set. A new data set contains new noise, and so the accuracy will go down a bit. So sometimes you want to be able to give up a little bit of accuracy in the sample you have, to be able to get accuracy on new data sets. In other words, when the noise is a little bit different, your algorithm will be robust. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+require(kernlab)
+data(spam)
+set.seed(333)
+smallSpam <- spam[sample(dim(spam)[1], size=10),]
+spamLabel <- (smallSpam$type=="spam")*1 + 1
+plot(smallSpam$capitalAve,col=spamLabel)
+```
+
+To illustrate, this, let's look at only ten random email messages that contain spam and non-spam (red is spam). We basically look for the occurrence of capital letters. So one thing that we could do is build a predictor that says if you have a lot of capitals than you're a spam message. 
+- AveCapital > 2.7 = "spam"
+- AveCapital < 2.4 = "nonspam"
+- additionally, to take care of that one outlier which is still spam, but is at 2.4, we are going to say if you're between 2.4 and 2.45, you are spam too.
+
+```{r, message=FALSE, warning=FALSE} 
+rule1 <- function(x){
+  prediction <- rep(NA, length(x))
+  prediction[x > 2.7] <- "spam"
+  prediction[x < 2.4] <- "nonspam"
+  prediction[(x >= 2.4 & x <= 2.45)] <- "spam"
+  prediction[(x > 2.45 & x <= 2.7)] <- "nonspam"
+  return(prediction)
+}
+table(rule1(smallSpam$capitalAve), smallSpam$type)
+```
+
+And that's designed to basically make the training set accuracy perfect. And you can see if we apply this rule to the training set, we actually do get perfect accuracy. So if you're nonspam, we perfectly classify you as nonspam, and if you are spam, we perfectly classify you as spam. 
+
+```{r, message=FALSE, warning=FALSE} 
+rule2 <- function(x){
+  prediction <- rep(NA, length(x))
+  prediction[x > 2.8] <- "spam"
+  prediction[x <= 2.8] <- "nonspam"
+  return(prediction)
+}
+table(rule2(smallSpam$capitalAve), smallSpam$type)
+```
+
+This second rule on the training set would then miss that one value. In other words, you could have a prediction of nonspam for that one spam message that was just a little bit lower in our training set.
+
+```{r, message=FALSE, warning=FALSE} 
+sum(rule1(spam$capitalAve)==spam$type)
+sum(rule2(spam$capitalAve)==spam$type)
+```
+
+However, if we compare the both predictors on the whole set, we can see about 30 more times, we actually get the right answer when we use this more simplified rule. An overfitting occurred.
+
+The types of errors that you can make when you're doing a binary prediction problem can be distinguished in terms of true positives and true negatives, and false positives and false negatives. Positive and negative simply means Whether an algorithm decided that you're in a class, or not in a class.  True and false refer to the true state of the world. So, true means that you actually belong to the class we're trying to identify, and false means that you actually don't belong to that class. Accuracy is a probability that we classified an item to the correct outcome.
+
+
+
+<br> 
+
+##### Prediction study design
+
+Prediction study design can help to to minimize the problems that can be caused by in sample verses out of sample errors. 
+
+ 1. The first thing that we need to do is to find our error rate.
+ 2. Then you need to split your data, the data that you're going to be using to build and validate your model into three components: training, testing & validation
+ 3. On the training set, you pick features using cross-validation; the idea is basically to use that training set to pick which of the features that are most important in your model.
+ 4. use that same technique to actually pick the prediction function and estimate all the parameters that you might be interested in.
+ 5. We build a model using the training set. If there's no validation set, then we apply the best model that we have to our test set exactly one time. 
+ 6. If there's a validation set and a test set then you might apply your best prediction models all to your test set and refine them a little bit.  
+
+<br>
+
+#### The caret package in R
+
+The caret package is a very useful front end package that wraps around a lot of the prediction algorithms and tools. The package contains tools for
+- data splitting
+- pre-processing
+- feature selection
+- model tuning using resampling
+- variable importance estimation
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+require(caret)
+require(kernlab)
+data(spam)
+inTrain <- createDataPartition(y = spam$type,
+                               p = 0.75, list = FALSE)
+training <- spam[inTrain,]
+testing <- spam[-inTrain,]
+```
+
+In caret, you may use createDataPartition to separate the data set into training and test sets (here, based on a type and using p to allocate data between the two sets automatically). 
+
+You might also want to do something like cross validation where you split your training set into a bunch of smaller data sets, the K-folds that you'll then use to do cross validation. One way that you can do that is with this createFolds function in the caret package. 
+
+For resampling or bootstrapping, you can use the createResample function.
+
+You can also use it to create time slices. If you're analyzing data that you might be using for forecasting, you can use it to take continuous values in time.
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+set.seed(1233)
+modelFit <- train(type~.,data=training, method ="glm")
+```
+
+In order to fit a model just use the train function (in the example above, basically all of the defaults that the train function chooses for you are set). You can choose from a lot of available options, though, like upweight or downweight certain observations. These are particularly useful if you have very unbalanced training set. 
+
+One of the most important components of building a machine learning algorithm or prediction model is understanding how the data actually look and how the data interact with each other. So, the best way to do that is actually by plotting the data, in particular plotting the predictors. I would choose to do this with, for instance,  ggplot2.
+
+Covariates are sometimes called predictors and sometimes called features. They're the variables that you will actually include in your model that you're going to be using to combine them to predict whatever outcome that you care about. There are two levels of covariate creation, or feature creation. The first level is, taking the raw data that you have and turning it into a predictor that you can use. So the raw data often takes the form of an image, or a text file, or a website. That kind of information is very hard to build a predictive model around when you haven't summarized the information in some useful way into either a quantitative or qualitative variable. Hence, this raw data needs to be turned into features or covariates which are variables that describe the data as much as possible while giving some compression and making it easier to fit standard machine-learning algorithms.
+
+To stay with the spam example: features of raw emails need to be extracted. These common ground predictor variables could be capital letters, dollar signs etc. This step usually involves a lot of thinking about the structure of the data that you have and what is the right way to extract the most useful information in the fewest number of variables that captures everything you want.
+
+The next level is transforming tidy covariates; these are features you've already created on the data set, and then creating new covariates out of them. Usually this is transformations or functions of the covariates, that might be useful when building a prediction model.
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+require(ISLR)
+data(Wage)
+inTrain <- createDataPartition(y=Wage$wage, p = 0.7, list = FALSE)
+training <- Wage[inTrain,]
+testing <- Wage[-inTrain,]
+table(training$jobclass)
+```
+
+One idea is that's very common when building machine learning algorithms is to turn covariates that are qualitative, or factor variables, in this case the jobclass that might determine the wage, into what are called dummy variables. The way that you can do that with the caret package is with the dummy variables function. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+dummies <- dummyVars(wage ~ jobclass, data = training)
+head(predict(dummies, newdata = training))
+```
+
+The outcome is an indicator for every individual that they are either industrial or information. 
+
+Another thing that one can use is the near zero variable or function in caret to identity variables that have very little variability and will likely not be good predictors. For instance, the variable sex only consists if males and so it has a very low frequency ratio and shouldn't be used in prediction algorithms. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+nsv <- nearZeroVar(training, saveMetrics = TRUE)
+nsv
+```
+
+Often you have multiple quantitative variables and sometimes they'll be highly correlated with each other. In this case, it's not necessarily useful to include every variable in the model. You might want to include some summary that captures most of the information in those quantitative variables (principal component analysis). 
+
+This code is looking for all the predictor variables that that have a very high correlation.  
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+require(caret)
+require(kernlab)
+data(spam)
+inTrain <- createDataPartition(y = spam$type,
+                               p = 0.75, list = FALSE)
+training <- spam[inTrain,]
+testing <- spam[-inTrain,]
+
+M <- abs(cor(training[,-58]))
+diag(M) <- 0
+which(M > 0.8, arr.ind = TRUE)
+plot(spam[,34], spam[,32])
+```
+
+Let's make a coherent example of regression with multiple covariates using the wages dataset. As one can see from the plot age versus wage, that the information variable might be able to predict at least some fraction of the variability that's in that top class up at the top of the plot. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+require(ISLR)
+data(Wage)
+inTrain <- createDataPartition(y=Wage$wage, p = 0.7, list = FALSE)
+training <- Wage[inTrain,]
+testing <- Wage[-inTrain,]
+qplot(age, wage, colour = jobclass, data = training)
+```
+
+Plotting education reveals that an advanced degree also explains a lot of the variation in the top group. Hence, some combination of degree and class of job could explain why the relationship between age and wage isn't a perfect relationship. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+qplot(age, wage, colour = education, data = training)
+```
+
+The next thing that we do is fit a linear model with multiple variables in it to reflect these relationships. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+modFit <- train(wage ~ age + jobclass + education, method = "lm", data = training)
+modFit
+```
+
+The reason why 10 depictors are displayed is simply because it creates indicator variables for e.g. each of the single levels of education. Afterwards, you can plot the fitted values, so this is the predictions from our model on the training set versus the residuals, that's the amount of variation that's left over after you fit your model and the other thing is to assess the variability introduced by variables not just used in the model:
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+qplot(modFit$finalModel$fitted, modFit$finalModel$residuals, colour = race, data = training)
+```
+
+We like to see this laying on the zero line, but what we can see is that it seems like some of these outliers up here may be explained by the race variable.
+
+Another smart move is to plot the predicted values for wage in the test set versus the predicted values in the test set. Ideally, these two things would be very close together. in the test set, you can explore and try to identify trends that you might have missed. So, for example, here we're looking at the year that the data was collected in the test set. Now something to keep in mind is that if you do this sort of exploration in the test set, you can't then go back and re-update your model in the training set because that would be using the test set to rebuild your predictors.
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+pred <- predict(modFit, testing)
+qplot(wage, pred, colour = year, data = testing)
+```
+
+If you want all of the covariants in your model building, one thing that you can do is use this again in the training function.  It says predict with all of the variables in the data set. This is By default if you don't want to try to do some sort of model selection in advance. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+modFitAll <- train(wage~.,data = training, method = "lm")
+pred <- predict(modFitAll, testing)
+qplot(wage, pred, data = testing)
+```
+
+<br>
+
+#### Predicting with trees
+
+The basic idea is that if you have a bunch of variables that you want to use to predict an outcome, you take the variable that best separates the outcomes, and use it to split the outcome into different groups ("leaves"). And, so as you split the outcomes into different groups you build "nodes", on whih you can evaluate the homogeneity of the outcome within each group. And continue to split again if necessary, until you get outcomes that are separated into groups that are homogeneous enough, or that they are small enough that you need to stop.
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+require(ggplot2)
+data(iris)
+names(iris)
+table(iris$Species)
+```
+
+The names of this data set are the different variables that we're going to be using to predict the species.
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+inTrain <- createDataPartition(y=iris$Species, p = 0.7, list = FALSE)
+training <- iris[inTrain,]
+testing <- iris[-inTrain,]
+qplot(Petal.Width, Sepal.Width, colour = Species, data = training)
+```
+
+You can see there are three very distinct clusters if you plot the petal width versus the sepal width. This is a rather easy task for a classification tree.
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+modFit <- train(Species ~.,method = "rpart", data =training)
+modFit$finalModel
+```
+
+A look at the final model tells me what all the nodes are and how they're split and what is the probability of being in each class is for each split. Number 2 for example tells us that there is a split that says petal.length is less than 2.6, and if that happens then all of the examples that have pedal length less than 2.6 belong to setosa. You may also plot this:
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+plot(modFit$finalModel, uniform = TRUE, main = "Classification Tree")
+text(modFit$finalModel, use.n = TRUE, all = TRUE, cex = .8)
+```
+
+It reads like this: if petal.length is below 2.6, it is setosa, if not, go to the right node and so on. Just with the linear regression model, you can make use of the predict function to map new values to the classes.
+
+<br>
+
+#### Random Forests
+
+The basic idea is to bootstrap samples and our training data set, and to rebuild classification or regression trees on each of those bootstrap samples. At each split we also bootstrap the variables. In other words, only a subset of the variables is considered at each potential split. This makes for a diverse set of potential trees that can be built. And then we either vote or average those trees in order to get the prediction for a new outcome. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+data(iris)
+inTrain <- createDataPartition(y=iris$Species, p=0.7, list = FALSE)
+training <- iris[inTrain,]
+testing <- iris[-inTrain,]
+modFit <- train(Species~ .,data=training, method = "rf", prox = TRUE)
+modFit
+```
+
+The model tells it to fit the outcome to be species and to use any of the other predictive variables as potential predictors. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+getTree(modFit$finalModel,k=2)
+```
+
+The function above displays the tree. It becomes apparent on which variable we're splitting on, what's the value where that variable is split and then what the prediction is going to be out of that particular split. 
+
+```{r, message=FALSE, warning=FALSE, fig.height=5, fig.width=5} 
+pred <- predict(modFit, testing)
+testing$predRight <- pred == testing$Species
+table(pred, testing$Species)
+```
+
+We can see for example we missed two values with the random forest model. But overall it was highly accurate in the prediction.
+
+<br>
+
+#### Regularized regression
+
+The basic idea is to fit a regression model and then penalize or shrink large coefficients corresponding with some of the predictor variables. The reason why one might do this is because it might help with the bias variance tradeoff if certain variables are highly coordinated with each other. Imagine a function $Y = ß0 + ß1X1 + ß2X2$. This function can be approximated when X1 and X2 are nearly correlated to $Y = ß0 + (ß1 + ß2)X1$.
+
+Suppose we want to be able to make a prediction on a large number of predictors in the data set. Suppose we predict with all possible combinations of predictor variables. What will happen is that as the number of predictors increases from left to right, the training set error always goes down. As you include more predictors, the training set error will always decrease. The test set error on the other hand, as the number of predictors increases, goes down until it hits a plateau, and it starts to go back up again. This is because we're overfitting the data in the training set, and eventually, we may not want to include so many predictors in our model. 
+
+One way is to split up into more samples to use for testing and adjusting the model fit. Another one is to use regularization. So to control the variance we might regularize or shrink the coefficients. We want to minimize the distance between our outcome and our linear model (which will be the residual sum of squares). Adding a panelty will shrink the beta coefficients back down if they are too big. Methods used are ridge and lasso. 
+
+<br>
+
+###Classification
+
+Classification is one of the most widely used and fundamental areas of machine learning. If you understand classifiers, you'll also understand basically the rest of machine learning. A classifier takes an input, the features derived from data and as an outut makes a prediction which is a discrete class or category or label for the data. The goal of a classifier is to learn a mapping from the input to the output. 
+
+Spam filtering is a good example for the classifiers. 
+
+<br>
+
+#### Linear classifiers
+
+Task: Imagine you want to dine out and have sushi based on reviews. Every review has different aspects and different sentences. I would like capture a sentiment of each sentence so I can understand if it's good with respect to sushi which is what I care the most about. I want to feed every sentence to a classifier, resulting in one of the outcomes positive (+1) or negative (-1). If the score is greater than zero, we say that the output, the prediction $\hat{y}$, is +1. And if the score is less than zero, we say that the prediction is -1. 
+
+A linear classifier associates every word in a sentence with a coefficient which says how positively influential this word is or how negatively influential. So good might have a coefficient of 1.0, great might have a coefficient of 1.5, terrible -2.1 and so on. This is done for every relevant word in a sentence; afterwards, it sums up to a score for a sentence.
+
+Now, what we need to do is train the weights of these linear classifiers from data. So given some input training data that includes sentences of reviews labeled with either plus one or minus one, positive or negative. We're going to feed that training set to some learning algorithm which is going to learn the weights associated with each word. 
+
+<br>
+
+##### Decision Boundaries
+
+Decision boundary is a boundary between positive predictions and negative predictions. 
+
+If all sentences containing awfuls and/or awesomes are plotted into a graph, it may look like this with a classifier that we've trained with the coefficients 1.0 and -1.5 corresponding to a line, where 1.0 times awesome minus 1.5 times the number of awfuls is equal to zero (the decision boundary). Everything below that line has score greater than zero. 
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture27.png)
+</div>
+
+If a linear classifier contains more than 2 coefficients, the divider will take on the shape of a (hyper)plane or more complicated shapes.
+
+Naturally, the decision boundaries is shifted if the coefficients change, which will affect the outcome of the points being either in the +1 or -1 section.
+
+<br>
+
+##### Predicting class probabilities with logistic regression
+
+We don't just predict plus one or minus one. We predict a probability. How likely is this review to be positive? How likely is it to be negative? 
+
+Many classifiers provide a degree of certainty P(y|x). And so $\hat{p}$ is going to be useful for predicting $\hat{y}$, the predictive class, which in our case is the sentiment. Estimating $\hat{P}(y|x)$ improves interpretability, as it predicts $\hat{y} = +- 1$ and tells how sure it is.
+
+However, probabilities are between 0 and 1, that is why you need to "squeeze" the score into that interval of [0,1] with a link function. Logistic regression is a specific case of that, where we use what's called the logistic function to squeeze minus infinity to plus infinity into the interval 0, 1 so we can predict probabilities for every class: $sigmoid(Score) = 1/(1 + e^-score)$
+
+Now we are ready to describe our logistic regression model. It takes a score as input that ranges from minus infinity to plus infinity. It pushes it through the sigmoid function. The logistic regression model has the characteristics that we're hoping for: if the score is zero we have a probability of 0.5. So if the score is +2, it's 0.88. Now if the score is bigger, let's say the score is four, we should still output a y = +1, but we should be more sure. If the score is negative, we get a low probability.
+
+One example: the red dot has four #awesomes and two #awfuls so this kind is -3, so you have the score is 4- 1.5 times 2, which gives you a total of 1. And if you push that through the the sigmoid, you realize the probability that y is equal to +1 given this particular xi is equal to 0.73. And you can read that from the graph as well. So if I go like this and I push it to the right, I should get 0.73.
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture28.png)
+</div>
+
+General rules for logistic regression: If you keep everything the same but change the constant, it shifts the line. If you keep the constant but change the magnitude of the parameters, the curve grows much more steeply.
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture29.png)
+</div>
+
+<br>
+
+This may hint at an overfitted model, as when overfitting a classifier, the coefficient is getting bigger to lead the sigmoid very close to a 0 or 1. So we are mistakenly overconfident.
+
+<br>
+
+##### L2-regularized logistic regression and gradient ascent
+
+For the reason described above, we want to balance how well a function fits data and the magnitude of coefficients. The quality metric in logistic regression is the data likelihood. We need to choose coefficients so that they maximize the likelihood (gradient ascent). So we see that the likelihood is going to be what we're going to optimize when we try to make it big. But at the same time, we're trying to make something small, which is the magnitude of the coefficient. So there are different metrics for magnitude of coefficients. One is the sum of the squares, also called the L2 norm, the square of the L2 norm. It's the square of the first coefficient plus the square of the second coefficient plus the square of the third coefficient and so on plus the square of the last coefficient, w d squared. Its penalizes large coefficients.
+
+<br>
+
+#### Decision Trees
+
+Task: What makes a loan risky? Bank is going to look for some propertires, i.e. income, past experiences,... This can be seen as a classfier problem and it reiterates the prediction based on the depth of the information level: you start the application and look at some particular feature of the particular input. Let's say, what has my credit been like? If my credit has been excellent, I just make the loan without looking at any other information about me. But if my credit has been only fair, I look at the term of the loan. If the term is short, maybe it's too risky.And so on...
+
+In general I'm going to be given an imput xi. In this case it has assignments to each one of those input features that say credit poor, income high, and term five years longer term loan. And then I traverse the path down the tree to make a prediction which in this case $\hat{y}$ would be safe. So this is the model predicts to be a safe loan to make. 
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture30.png)
+</div>
+
+<br>
+
+Again, the classification error (incorrect predictions/examples) provides a good quality metric fo the accuracy of decision trees. The goal is to find the tree with the lowest classification error.
+
+<br>
+
+##### Recursive greedy algorithm
+
+1. typically, we'll start with an empty tree where you have some data, some loans labeled as safe, others labeled as risky. And this node in the tree, which is called the root node contains the whole data set
+
+2. then we are going to pick a feature to split the tree on, i.e. credit. In this case, this creates three subsets of data, based on the values of credit - one subset contains data with credit = excelent, another with credit = fair and one with credit = poor.
+
+3. And next, we'll continue splitting each one of these branch, each one of the datasets. Except for some instances, i.e. if in one node let's say credit = excellent all the labels say safe, then there is no point in keep on splitting. In such cases, you can predict that everything with excellent credit is a safe loan.
+
+4. For the other two, we keep on going splitting the trees on new values.
+
+<br>
+
+The first thing we need to explore is this idea of picking what feature to split on. 
+
+<div style="width:500px; height=500px">
+![](C:\Users\admkett\Documents\Captures\Capture31.png)
+</div>
+
+For each intermediate node we can try to make a prediction in decision stump. So for example for poor credit we see the majority of the data in there has risky associated with it. So we predicate that'll be a risky loan. For fair credit, we see that the majority 9 versus 4 have, are safe loans. So we predict that to be a safe loan. And for excellent credit, we predict that to be a safe loan, because 9 versus 0 So nine safe loans in there. So for each node, we look at the majority value to make a prediction.
+
+But how do we find the best feature to split on? Intuitively, a better split is one that gives you lowest classification error. We'd like to figure out whether it's better to split on credit or split on term. And the way we're going to do that is by measuring the number of mistakes each one of the decision stumps makes and pick the one that makes the least number of mistakes, so has the lowest error. The  error is just the number of mistakes a classifier makes divided by the total number of data points.
+
+And then, if we pick the best feature to split on,  then we split our data into decision stump with the selected feature, and then for each leaf of the decision stump or each node associated with it we go back and learn a new decision stump. And the question is, we keep iterating like this forever or do we stop somewhere? 
+
+The criteria for stopping can be divided into: 
+
+1. the first stop in condition is stop splitting when all the data agrees on the value of y.
+2. If we we had used up all of the features in our dataset. So we stop if there's nothing left to split on.
+3. We get the same things if you keep splitting them forever. And so the two stopping criteria actually very simple stop if every data point agrees or stop if you run out of features. 
+
+But: if predicting on continuous numerical values, i.e. income, splitting can lead to overfitting, because there might be that an income is $30,000, this is definitely a risky loan, but if you're income is $31,400 is definitely a safe loan, however if your income is now 39,500, you're back to risky. In these cases, we need a threshold split, e.g. on one side of the node are all salaries that are below $31, 000 etc.
+
+It's a pretty simple process of traversing down the tree in order to make a prediction for a given input. if the current node is a leaf, return, predict whatever is on that leaf. If it's not a leaf, then pick the child that agrees with the input and then recurse on that child. So return the prediction the child makes. 
+
+<br>
+
+#### Overfitting in Decision Trees
+
+As we increase the depth of the decision stumps (when we are splitting) it also increases the complexity of the decision boundaries. The training error reduces with depth, but the true error grows. Deeper trees cause lower training error.
+
+Simpler trees are better! In a contest of decision trees, the Occam's razor principle says if two trees have similar classification error on the validation set, pick the simpler one. There are two ways to achieve this:
+
+1. Early Stopping: stop learning algorithm before tree becomes too complex
+2. Pruning: Simplify tree after learning algorithm terminates
+
+We can either make up our mind about stop splitting after a certain depth is reached or we may stop recursing if the classification error on the validation error doesn't get better. 
+
+<br>
+
+#### Boosting
+
+The underlying question to boosting is "Can a set of weak learners be combined to create a stronger learner?" So at the core of boosting is the idea of an ensemble classifier. Let's assume we have several decision stumps (we stick with the eample of loan predictions), and each of them gives an indication whether a new value is a sign of a risky or a save loan, i.e. income is higher than 100k predicts +1, credit history is bad predicts -1 and so on. Boosting tries to combine in an ensemble way this -1, +1 votes from different classifiers by weighting them (ensemble models). So wat a boosting will do is take a decision stump, evaluate it, look at how well it's doing in our data, and learn a next decision stump, a next weak classifier and then next the classifier is going to focus on the data points where the first one was bad. In other words, we're going to look at where we're making mistakes so far and want to get better, see the proportion or the impact or how much we care about the points where we've made mistakes. So boosting can be viewed as a greedy algorithm for learning an ensemble from data.
+
+<br>
+
+##### AdaBoost
+
+We start by applying the same weight for all data points, 1/n.
+For each iteration, we learn the classifier with the data weights, and based on that observation, we recompute the weights. The problem is, how much do you trust the classifier? Because this will determine how much you weight them in the next iteration. How do we measure whether a classifier's good or not? We need to measure training error on weighted data (weighted error). 
+
+<br>
+
+##### Boosting and Overfitting
+
+After some iterations, the training error of boosting goes to zero (but may oscillate a bit on the way). Boosting - compared to the "normal" algorithm like for instance a decision tree - tends to be robust to overfitting. Boosting will however eventually overfit if too many iterations have taken place. 
+
+<br>
+
+#### Precision & Recall
+
+In  many real world applications, error or accuracy is not a great measure to try to understand whether classifier is doing the right thing. What does it mean for a classifier to be good? Let's assume we want to interactively put positive reviews on a website. Just looking at the accuracy will not necessarily help: if i.e. 90 % of all reviews are negative, a classifier will probably always display something negative, because it is in the data. In that case, I want to make sure that if people visit my website, they better see a good review. So we need to be very precise in the outcome of the selection in reviews. The other thing we have to worry about is to find those rare positive reviews. That is called recall. 
+
+A bit more formal: 
+Precision is the fraction of positive predictions that are actually positive. Recall is the fraction of positive data predicted to be positive. A high recall means that we discover all of the positive data points in the data. So we want to find both true positives and true negatives, while the error rate of false negatives and false positives needs to be minimal.
+
+The two KPIs can go against each other sometimes. I.e. an optimistic model has a high ecall, but low precision. In terms of the example above it will predict almost everything as positive. On the contrary, a pessimistic model predicts positive only when very sure. We want to find a balance between those two, as we want to find as many positive sentences, but minimize the risk of incorrect predictions.
+
+A tradeoff between precision and recall can be achieved by using the probabilities that have been assigned for each predicition (prediction of most likely class) on a prediction-recall curve.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

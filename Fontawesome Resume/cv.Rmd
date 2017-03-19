@@ -1,0 +1,280 @@
+---
+output: 
+  pdf_document:
+    latex_engine: pdflatex
+    template: latex-cv.tex
+geometry: margin=1in
+
+title: "CV"
+author: Resume Tim Kettenacker
+
+fontawesome: yes
+address: Ricarda-Huch-Str.1, 74321 Bietigheim
+phone: "+49 173 7283162"
+email: tim.kettenacker@gmail.com
+linkedin: timkettenacker
+github: timkettenacker
+languages: German (mother tongue), English (fluent)
+origin: born on 31-03-1989 
+updated: no
+
+fontfamily: sourceserifpro
+fontsize: 12pt
+linkcolor: blue
+urlcolor: blue
+
+
+---
+
+
+# Personal Summary
+
+I enjoy combining knowledge from interdisciplinary fields to broaden my horizon and my skillset. I am therefor thrilled to work in the area frequently coined by the term 'data science', as it constantly revolves around the intersection of business and technology and shows how data can support the business when handled properly. In my current job at Uniserv I am frequently working on integrating data sources varying in content and quality to bring it in a common format that is ready-to-use by applications, analytics and users. For this purpose, I taught myself the R scripting language, and then started to dig deeper into data science. I furthermore gathered experience in the fields of data storage and information retrieval, namely by using MongoDB and elasticsearch on the job. During my thesis, I assessed SAP HANA’s text analytics functionalities.   
+
+Apart from my technological skillset, I am able to contribute through my ability to talk the language of different stakeholders: part of my job is to clarify the business expectations of customers and translating them to developers. I am used to work in an agile startup atmosphere with Uniservs‘ international development team in Amsterdam. It is this way of working that suits my personality: I am a keen, self-driven learner who deeply believes that the so-called ‚Nexus of Forces‘ will have a strong impact on all businesses. I strive to tackle upcoming challenges in this domain and looking to expand my career on an international level.
+
+
+
+-
+
+# Representative projects
+
+**Setting-up an enterprise-wide Master Data Management and Data Quality Platform for one of Europe's leading parcel delivery service companies**
+
+\hfill{August 2015 - ongoing follow-up projects}
+
+\faCube{ Setting-up an enterprise-wide Master Data Management and Data Quality Platform in order to increase delivery accuracy and optimize delivery time and costs.}
+
+\faCloudUpload{ 10 mio records are currently stored in the productive cloud system. 7 sources have been integrated as write/sync-back so far as part of the master data management initiative. Additionally, the service infrastructure handles approx. 1,5 mio transactional records each day (real-time data validation and enrichment). }
+
+\faUserPlus{ Refining client requests into technical requirements. Establishing data quality standards. Coordination of development tasks with clients and third-party-contractors. Planning and execution of test plans. Logical and physical data modelling. Technical architect for the connection and implementation of additional source systems into the existing landscape. Software configuration / development and roll-out of changes. Visualization and interpretation of data-centric KPIs. 2nd and 3rd level support in managed service. Involvement in a pilot project to predict delivery success by feeding machine learning algorithms with transactional data.}
+
+-
+
+**Consolidating information from various sources of a global assembly manufacturer in a migration scenario** 
+
+\hfill{March 2016 - ongoing follow-up projects}
+
+\faIndustry{ Consolidating information from various source systems in an MDM system before migrating it to SAP cloud. }
+
+\faCloudUpload{ 2 mio records were stored in the cloud system. 4 sources have been integrated to use write/sync-back-operations. }
+
+\faUserPlus{ Requirements engineering with clients and third-parties. Establishing data quality standards. Physical and logical data modelling and modelling of data flows. Technical lead architect for the implementation. Technical support and coordination of third-party contractors. Development of several scripts to support data exchange between systems. Delivery of end-user trainings. }
+
+- 
+
+**MDM Proof of Concept for one of Germany's largest insurance companies** 
+
+\hfill{September 2016 - November 2016}
+
+\faEuro{ Proof of Concept for an enterprise-wide master data management initiative   }
+
+\faDatabase{ a test dataset was stored in the on-premise system. 2 sources have been integrated.}
+
+\faUserPlus{ Requirements engineering with clients and third-parties. Establishing data quality standards. Physical and logical data modelling. Delivery of end-user trainings and technical trainings.}
+
+-
+
+**Setting-up an enterprise-wide Master Data Management System for one of Germany's largest cooperative banks** 
+
+\hfill{August 2015 - July 2016}
+
+\faEuro{ Setting-up an enterprise-wide Master Data Management system in order to fulfill federal and compliance regulatories.}
+
+\faDatabase{ 13 mio records are currently stored on-premise. 1 SAP system is connected as an intermediary to handle write/sync-back.}
+
+\faUserPlus{ Requirements engineering with clients and third-parties. Coordination of development tasks as well as planning and execution of test plans. Documentation and presentation. Development of several scripts to support data analysis. }
+
+
+\newpage
+
+# Professional Experience
+
+\faBriefcase{ ongoing} \hfill{} **Customer Data Scientist** at **Uniserv: A Single Customer View**
+
+\small{\faMapMarker{ Pforzheim, Amsterdam}} \hfill{\small (Customer Data Scientist since January 2017, }
+
+\hfill{\small Technical Consultant Data Management from April 2016 until January 2017, }
+
+\hfill{\small Junior Consultant Data Management from August 2015 until April 2016)}\newline
+
+ 
+Consultancy in our Customer Master Data Management solution for German and Dutch clients in the logistics, insurance, banking, medical engineering and manufacturing sector
+
+- \faAngleRight{    modelling of use cases and implementation of MDM solutions into application landscapes}
+
+- \faAngleRight{    elaboration, validation and definition of customer requirements}
+
+- \faAngleRight{    translation of functional requirements into technical requirements and alignment with the international development team about development tasks according to the scrum-process}
+
+- \faAngleRight{    design of data architecture according to the usage and processing of data in the involved systems}
+
+- \faAngleRight{    logical and physical data modelling for use in NoSQL databases}
+
+- \faAngleRight{    integration and configuration of software in both on-premise and cloud environments}
+
+- \faAngleRight{    govern and optimize the stakes of data quality standards developed with different process owners (data governance)}
+
+- \faAngleRight{    determining statistical key figures using the R and Python programming languages}
+
+- \faAngleRight{    analysis of data structure and content to evaluate its impact on record linkage algorithms and data quality using the R and Python programming languages}
+
+- \faAngleRight{    data cleansing, manipulation, enrichment and visualization using the R and Python programming languages}
+
+- \faAngleRight{    configuration of the elasticsearch search engine for information retrieval in structured and unstructured data}
+
+- \faAngleRight{    planning and coordination of rollouts}
+
+- \faAngleRight{    creation of test plans and execution of functional and performance tests}
+
+- \faAngleRight{    delivery of both technical and user trainings for clients}
+
+- \faAngleRight{    2nd and 3rd level support}
+
+- \faAngleRight{    execution of presales activities}
+
+- \faAngleRight{    support of marketing activities}
+
+\newpage
+
+Additionally, I was involved in several internal projects
+
+
+- \faAngleRight{    involvement in a pilot project for predicting delivery accuracy for a customer in the logistics sector based on a machine learning approach}
+
+- \faAngleRight{    programming of an interactive visualization template for data audits}
+
+- \faAngleRight{    prototyping data science solutions to evaluate if and how the service portfolio can be extended}
+
+- \faAngleRight{    supervision of interns}
+
+
+-
+
+\faBriefcase{ January 2015 - July 2015} \hfill{} **Master Thesis SAP HANA** at **Uniserv: A Single Customer View**
+
+\small{\faMapMarker{ Pforzheim}}\newline
+
+Conducting my Master thesis
+
+- \faAngleRight{    Examination of SAP's new database technology SAP HANA}
+
+- \faAngleRight{    Development of a web application leveraging on SAP HANA's inbuilt search capabilities to perform fuzzy searches with a user-configured search pattern across large datasets}
+
+- \faAngleRight{    derivation of recommended actions for the product management department}
+
+Additionally, I was involved in the quality assurance of an upcoming data quality product:
+
+- \faAngleRight{    testing of authorization concepts}
+
+- \faAngleRight{    performance evaluation}
+
+- \faAngleRight{    translation of SAP objects}
+
+-
+
+\faBriefcase{ September 2013 - August 2014} \hfill{} **Working Student** at **Uniserv: A Single Customer View**
+
+\small{\faMapMarker{ Pforzheim}}\newline
+
+Involvement in a consulting project with the goal to extend Uniserv's product portfolio by a dashboard application to measure data quality KPI
+
+- \faAngleRight{    involvement in the technical and visual design as well as functionality of the application}
+
+- \faAngleRight{    vendor selection and creation of a prototype with a third-party solution}
+- \faAngleRight{    set-up of change requests}
+
+- \faAngleRight{    presenting prototype to the customer}
+
+\newpage
+
+Involvement in a project with the goal to modify an existing SAP function module (RFC_READ_TABLE)
+according to customer preferences
+
+- \faAngleRight{    identification of the function module's flaws and derivations of requirements}
+
+- \faAngleRight{    programming of an improved function module in ABAP}
+
+- \faAngleRight{    practical research regarding communication and packaging between SAP and third-party systems via RFC}
+
+- \faAngleRight{    implementation of a test report in ABAP}
+
+-
+
+\faBriefcase{ August 2012 - April 2013} \hfill{} **Working Student Human Resources** at **Knorr Brake**
+
+\small{\faMapMarker{ Schwieberdingen}}
+
+- \faAngleRight{    SAP E-Recruiting}
+
+- \faAngleRight{    SAP HCM}
+
+- \faAngleRight{    SAP Training and Event Management (PE)}
+
+- \faAngleRight{    Applicant Management and creation of job references and contracts}
+
+-
+
+\faBriefcase{ September 2011 - March 2012} \hfill{} **Intern Human Resources** at **CAS Software AG**
+
+\small{\faMapMarker{ Karlsruhe}}
+
+- \faAngleRight{    Applicant Management (Social Media)}
+
+- \faAngleRight{    Creation of job references}
+
+-
+
+\faBriefcase{ August 2008 - May 2009} \hfill{} **Mandatory Civilian Service**
+
+\small{\faMapMarker{ Ludwigsburg}}\newline
+
+Civil Service after graduating from German secondary school
+
+-
+
+\newpage
+
+# University Education
+
+\faUniversity{ 2013 - 2015} \hfill{} **Information Systems** at **Pforzheim University of Applied Sciences**
+
+\small{\faMapMarker{ Pforzheim}}\newline
+
+Completed with Master of Science Degree (Grade 1.2), received an Award of the Corporate Sector Information Systems and Services of Robert Bosch and Admission to Honours Society Beta Gamma Sigma for excellent academic achievements
+
+- Main subjects: Business Process Management, Business Applications, Enterprise-Content-Management-Systems, Project Management, Business Intelligence, Advanced Software Engineering, Emerging Technologies, Database Technologies
+
+-
+
+\faUniversity{ 2014} \hfill{} **Study abroad** at **Institut Teknologi Bandung**
+
+\small{\faMapMarker{ Bandung}}\newline
+
+
+Exchange for 1 Semester (Overall Grading 1.0)
+
+- Main subjects: Consumer Behavior, Marketing Management and Bahasa Indonesia
+
+-
+
+\faUniversity{ 2009 - 2013} \hfill{} **Business Administration** at **Pforzheim University of Applied Sciences**
+
+\small{\faMapMarker{ Pforzheim}}\newline
+
+Completed with Bachelor of Science Degree (Grade 1.6), major in Human Resources
+
+- Main subjects: Change Management & Leadership, Finance & Accounting, Labour Law
+
+-
+
+# Certificates
+
+- \faAngleRight{    SAP Certified - Associate Business Foundation and Integration SAP ERP 6.0 EHP 5} \hfill April 2014
+
+- \faAngleRight{    Integrated Business Processes with SAP (TERP10)} \hfill February 2014
+
+- \faAngleRight{    Advanced SAP ERP Customizing} \hfill August 2014
+
+- \faAngleRight{    AdA} \hfill May 2014
+
