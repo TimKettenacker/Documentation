@@ -9,9 +9,9 @@ title: "CV"
 author: Resume Tim Kettenacker
 
 fontawesome: yes
-address: Ricarda-Huch-Str.1, 74321 Bietigheim
-phone: "+49 173 7283162"
-email: tim.kettenacker@gmail.com
+address: xxxxxxxxxx
+phone: "+xxxxxxxx"
+email: xxxxx
 linkedin: timkettenacker
 github: timkettenacker
 languages: German (mother tongue), English (fluent)
